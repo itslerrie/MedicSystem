@@ -1,0 +1,50 @@
+﻿@model MedicSystem.ViewModels.DoctorVM.ListDoctorVM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+<h2>Doctors</h2>
+@if (MedicSystem.Models.AuthenticationManager.LoggedUser.IsAdmin == true)
+{
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+
+@Html.Partial("~/Views/Shared/_Search.cshtml", Model.Filter)
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>E-mail</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Specialization</th>
+        @if (MedicSystem.Models.AuthenticationManager.LoggedUser.IsAdmin == true)
+        {
+            <th>Options</th>
+        }
+    </tr>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>Dr. @item.User.Lastname</td>
+            <td>@item.User.Email</td>
+            <td>@item.User.Phone</td>
+            <td>@item.Address</td>
+            <td>@item.Specialization</td>
+
+            @if (MedicSystem.Models.AuthenticationManager.LoggedUser.IsAdmin == true)
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id=item.UserId}) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.UserId  })
+                </td>
+            }
+        </tr>
+    }
+</table>
+@Html.Partial("~/Views/Shared/_Pager.cshtml", Model.Pager)

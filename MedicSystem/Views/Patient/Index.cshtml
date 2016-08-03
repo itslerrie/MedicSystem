@@ -1,0 +1,35 @@
+﻿@model MedicSystem.ViewModels.UserVM.ListUserVM
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Patients</h2>
+
+@Html.Partial("~/Views/Shared/_Search.cshtml", Model.Filter)
+
+<table class="table">
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Phone</th>
+        <th>E-mail</th>
+        <th>Options</th>
+    </tr>
+
+@foreach (var item in Model.Items) {
+
+    <tr>
+        <td>@item.Firstname</td>
+        <td>@item.Lastname</td>
+        <td>@item.Phone</td>
+        <td>@item.Email</td>
+        <td>
+            @Html.ActionLink("Delete", "Delete", new {id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>
+@Html.Partial("~/Views/Shared/_Pager.cshtml", Model.Pager)

@@ -1,0 +1,63 @@
+﻿@model MedicSystem.ViewModels.UserVM.DetailsUserVM
+@{ 
+    DataAccess.Repository.DoctorRepo doctorRepo = new DataAccess.Repository.DoctorRepo();
+    Doctor logedDoctor = doctorRepo.GetById(MedicSystem.Models.AuthenticationManager.LoggedUser.Id);
+}
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Lastname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Lastname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+        @if (logedDoctor != null)
+        {
+            <dt>
+                Adress:
+            </dt>
+
+            <dd>
+                @logedDoctor.Address
+            </dd>
+            <dt>
+                Specialization:
+            </dt>
+
+            <dd>
+                @logedDoctor.Specialization
+            </dd>
+        }
+       
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit") |
+    @Html.ActionLink("Back", "Index")
+</p>

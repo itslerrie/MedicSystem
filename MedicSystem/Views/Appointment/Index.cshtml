@@ -1,0 +1,84 @@
+﻿@model MedicSystem.ViewModels.AppointmentVM.ListAppointmentVM
+@{
+    DataAccess.Repository.DoctorRepo doctorRepo = new DataAccess.Repository.DoctorRepo();
+    Doctor logedDoctor = doctorRepo.GetById(MedicSystem.Models.AuthenticationManager.LoggedUser.Id);
+}
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+   #Confirm{
+       color: green;
+       font-weight: 700;
+   }
+   #Decline{
+       color: red;
+       font-weight: 700;
+   }
+   #Pending{
+       color: darkorange;
+       font-weight: 700;
+   }
+</style>
+
+<h2>Appointments</h2>
+
+@Html.Partial("~/Views/Shared/_Search.cshtml", Model.Filter)
+
+@if (logedDoctor == null)
+{
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+
+<table class="table">
+    <tr>
+        @if (logedDoctor != null)
+        {
+            <th>Patient Name</th>
+        }
+        else
+        {
+            <th>Doctor Name</th>
+        }
+        <th>Appointment's Date</th>
+        <th>Appointment's Status</th>
+        <th>Options</th>
+    </tr>
+
+
+@foreach (var item in Model.Items)
+{
+        <tr>
+            @if (logedDoctor != null)
+            {
+                <td>@item.User.Firstname @item.User.Lastname</td>
+            }
+            else
+            {
+                <td>Dr. @item.Doctor.User.Lastname</td>
+            }
+            <td>@item.Date</td>
+            <td id="@item.IsApproved">@item.IsApproved</td>
+            <td>
+                @if (logedDoctor == null)
+                {
+                    @Html.ActionLink("Edit | ", "Edit", new { id = item.Id })
+                    @Html.ActionLink("Delete | ", "Delete", new { id = item.Id }) 
+                }
+                @Html.ActionLink("Details", "Details", new { id = item.Id })
+
+                @if (logedDoctor != null)
+                {
+                    @Html.ActionLink(" | Change Status", "ChangeStatus", new { id = item.Id })
+                }
+
+            </td>
+        </tr>
+    }
+</table>
+
+@Html.Partial("~/Views/Shared/_Pager.cshtml", Model.Pager)

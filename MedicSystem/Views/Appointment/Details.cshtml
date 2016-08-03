@@ -1,0 +1,94 @@
+﻿@model MedicSystem.ViewModels.AppointmentVM.DetailsAppointmentVM
+
+@{
+    DataAccess.Repository.DoctorRepo doctorRepo = new DataAccess.Repository.DoctorRepo();
+    Doctor logedDoctor = doctorRepo.GetById(MedicSystem.Models.AuthenticationManager.LoggedUser.Id);
+}
+
+<h2>Appointment Details</h2>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        @if (logedDoctor != null)
+        {
+            <dt>
+                Patient:
+            </dt>
+
+            <dd>
+                @Model.Patient.Firstname @Model.Patient.Lastname
+            </dd>
+            <dt>
+                Phone:
+            </dt>
+
+            <dd>
+                @Model.Patient.Phone
+            </dd>
+            <dt>
+                Email:
+            </dt>
+
+            <dd>
+                @Model.Patient.Email
+            </dd>
+        }
+        else
+        {
+            <dt>
+                Doctor:
+            </dt>
+
+            <dd>
+                Dr. @Model.Doctor.User.Lastname
+            </dd>
+            <dt>
+                Phone:
+            </dt>
+
+            <dd>
+                @Model.Doctor.User.Phone
+            </dd>
+            <dt>
+                Email:
+            </dt>
+
+            <dd>
+                @Model.Doctor.User.Email
+            </dd>
+            <dt>
+                Addres:
+            </dt>
+
+            <dd>
+                @Model.Doctor.Address
+            </dd>
+            <dt>
+                Specialization:
+            </dt>
+
+            <dd>
+                @Model.Doctor.Specialization
+            </dd>
+        }
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsApproved)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsApproved)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back", "Index")
+</p>
