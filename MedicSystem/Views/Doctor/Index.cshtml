@@ -23,6 +23,7 @@
         <th>Phone</th>
         <th>Address</th>
         <th>Specialization</th>
+        <th>Admin</th>
         @if (MedicSystem.Models.AuthenticationManager.LoggedUser.IsAdmin == true)
         {
             <th>Options</th>
@@ -36,6 +37,7 @@
             <td>@item.User.Phone</td>
             <td>@item.Address</td>
             <td>@item.Specialization</td>
+            <td>@item.User.IsAdmin</td>
 
             @if (MedicSystem.Models.AuthenticationManager.LoggedUser.IsAdmin == true)
             {

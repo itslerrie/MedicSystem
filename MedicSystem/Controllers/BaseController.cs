@@ -76,6 +76,7 @@ namespace MedicSystem.Controllers
         {
             if (!this.ModelState.IsValid)
             {
+                FillList(model);
                 return View(model);
             }
 

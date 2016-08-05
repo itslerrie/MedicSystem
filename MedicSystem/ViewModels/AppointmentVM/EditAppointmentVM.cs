@@ -15,7 +15,7 @@ namespace MedicSystem.ViewModels.AppointmentVM
         public int DoctorId { get; set; }
 
         [Required(ErrorMessage = "Please enter Date")]
-        //[Unique("Date")]
+        [UniqueAttribute("DoctorId")]
         public DateTime Date { get; set; }
 
         public List<SelectListItem> ListDoctors { get; set; }

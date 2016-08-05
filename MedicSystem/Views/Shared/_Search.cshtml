@@ -14,10 +14,25 @@
         }
     }
 
-    string path = "/" + ViewContext.RouteData.Values["controller"].ToString() + "/" + ViewContext.RouteData.Values["action"].ToString();
-
+    Array arr = null;
+    foreach (FieldInfo fi in Model.GetType().GetFields())
+    {
+        if (fi.FieldType.Name == "Array")
+        {
+            arr = (Array)fi.GetValue(Model);
+        }
+    }
 }
-<form action="@path" method="post">
+
+<script>
+   function SetExtraFilter()
+   {
+       document.getElementById("@(Model.Prefix.Replace(".", "__"))Choosen").value = $("#dropdown :selected").text();
+   }
+
+</script>
+
+<form action="/@(ViewContext.RouteData.Values["controller"].ToString())/@(ViewContext.RouteData.Values["action"].ToString())" method="post">
 
     @foreach (string key in this.Request.QueryString.Keys)
     {
@@ -41,7 +56,10 @@
     {
         if (filter.Count(f => Model.Prefix + f.Key.Name == key.ToString()) <= 0 && key.ToString() != Model.Pager.Prefix + "CurrentPage")
         {
-            <input type="hidden" id="@((Model.Prefix + key).Replace(".", "__"))" name="@key.ToString()" value="@this.Request.Form[key.ToString()].ToString()" />
+            if (key.ToString() != Model.Prefix + "Choosen")
+            {
+                <input type="hidden" id="@((Model.Prefix + key).Replace(".", "__"))" name="@key.ToString()" value="@this.Request.Form[key.ToString()].ToString()" />
+            }
         }
     }
 
@@ -50,6 +68,20 @@
         <label for="@(Model.Prefix.Replace(".", "__"))@kvp.Key.Name">@kvp.Value.DisplayName</label>
         <input class="form-control" id="@(Model.Prefix.Replace(".", "__"))@kvp.Key.Name" type="text" name="@(Model.Prefix)@kvp.Key.Name" value="@kvp.Key.GetValue(Model, null)" />
     }
+
+    @if (arr != null)
+    {
+        <label for="dropdown">Sort by:</label>
+        <select class="form-control" id="dropdown" onchange="SetExtraFilter()">
+            <option value="" selected>Choose value</option>
+            @foreach (var item in arr)
+            {
+                <option class="dropdown" value="@item">@item</option>
+            }
+        </select>
+        <input class="form-control" id="@(Model.Prefix.Replace(".", "__"))Choosen" name="@(Model.Prefix)Choosen" type="hidden" value="">
+    }
+
     <br />
     <input class="btn btn-default" type="submit" value="Filter" />
 </form>

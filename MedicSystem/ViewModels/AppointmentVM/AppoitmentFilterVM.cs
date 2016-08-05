@@ -16,6 +16,8 @@ namespace MedicSystem.ViewModels.AppointmentVM
         [FilterByAttribute(DisplayName = "Name:")]
         public string Name { get; set; }
 
+        public string Choosen { get; set; }
+        public Array Choose = new string[] { "confirm", "decline", "pending" };
 
         public override Expression<Func<Appointment, bool>> GenerateFilter()
         {
@@ -26,11 +28,13 @@ namespace MedicSystem.ViewModels.AppointmentVM
             {
                 return (u => (u.DoctorId == AuthenticationManager.LoggedUser.Id || u.User.Id == AuthenticationManager.LoggedUser.Id) &&
                         (String.IsNullOrEmpty(Name) || u.User.Firstname.Contains(Name)) &&
+                        (String.IsNullOrEmpty(Choosen) || u.IsApproved.ToLower().Equals(Choosen.ToLower())) &&
                         (String.IsNullOrEmpty(Name) || u.User.Lastname.Contains(Name)));
             }
             else
             {
                 return (u => (u.DoctorId == AuthenticationManager.LoggedUser.Id || u.User.Id == AuthenticationManager.LoggedUser.Id) &&
+                        (String.IsNullOrEmpty(Choosen) || u.IsApproved.ToLower().Equals(Choosen.ToLower())) &&
                         (String.IsNullOrEmpty(Name) || u.Doctor.User.Lastname.Contains(Name)));
             }
         }

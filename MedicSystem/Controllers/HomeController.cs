@@ -120,6 +120,7 @@ namespace MedicSystem.Controllers
             edit.Firstname = user.Firstname;
             edit.Lastname = user.Lastname;
             edit.Phone = user.Phone;
+            edit.IsAdmin = AuthenticationManager.LoggedUser.IsAdmin;
 
             if (doctor != null)
             {
@@ -147,6 +148,7 @@ namespace MedicSystem.Controllers
             user.Firstname = edit.Firstname;
             user.Lastname = edit.Lastname;
             user.Phone = edit.Phone;
+            user.IsAdmin = AuthenticationManager.LoggedUser.IsAdmin;
 
             repo.Edit(user);
 

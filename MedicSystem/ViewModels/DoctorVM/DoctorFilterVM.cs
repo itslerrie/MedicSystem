@@ -15,9 +15,13 @@ namespace MedicSystem.ViewModels.DoctorVM
         [FilterByAttribute(DisplayName = "Email:")]
         public string Email { get; set; }
 
+        public string Choosen { get; set; }
+        public Array Choose = new string[] {"true", "false"};
+
         public override Expression<Func<Doctor, bool>> GenerateFilter()
         {
             return (d => (String.IsNullOrEmpty(Name) || d.User.Lastname.Contains(Name)) &&
+                         (String.IsNullOrEmpty(Choosen) || d.User.IsAdmin.ToString() == Choosen) &&
                          (String.IsNullOrEmpty(Email) || d.User.Email.Contains(Email)));
         }
     }
