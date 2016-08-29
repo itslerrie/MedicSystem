@@ -8,30 +8,31 @@ using System.Web;
 using System.Web.Mvc;
 using DataAccess.Repository;
 using MedicSystem.Models;
+using DataAccess.Service;
 
 namespace MedicSystem.Controllers
 {
     public class AppointmentController : BaseController<Appointment, ListAppointmentVM, EditAppointmentVM, DetailsAppointmentVM,AppoitmentFilterVM>
     {
 
-        public override List<Appointment> ListRepo(BaseRepo<Appointment> repo)
-        {
-            List<Appointment> result = new List<Appointment>();
-            result = repo.GetAll(r => r.DoctorId == AuthenticationManager.LoggedUser.Id || r.User.Id == AuthenticationManager.LoggedUser.Id).ToList();
+        //public override List<Appointment> ListRepo(BaseRepo<Appointment> repo)
+        //{
+        //    List<Appointment> result = new List<Appointment>();
+        //    result = repo.GetAll(r => r.DoctorId == AuthenticationManager.LoggedUser.Id || r.User.Id == AuthenticationManager.LoggedUser.Id).ToList();
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public override void FillList(EditAppointmentVM model)
         {
-            UserRepo repoUser = new UserRepo();
-            DoctorRepo repoDoctor = new DoctorRepo();
-            List<Doctor> doctors = repoDoctor.GetAll().ToList();
+            UserService serviceUser = new UserService();
+            DoctorService serviceDoctor = new DoctorService();
+            List<Doctor> doctors = serviceDoctor.GetAll().ToList();
             List<User> result = new List<User>();
 
             foreach (var item in doctors)
             {
-                result.Add(repoUser.GetById(item.User.Id));
+                result.Add(serviceUser.GetById(item.User.Id));
             }
 
             model.ListDoctors = new List<SelectListItem>();
@@ -72,16 +73,11 @@ namespace MedicSystem.Controllers
             model.IsApproved = item.IsApproved;
         }
 
-        public override BaseRepo<Appointment> SetRepo()
-        {
-            return new AppointmentRepo();
-        }
-
         [HttpGet]
         public ActionResult ChangeStatus(int id)
         {
-            AppointmentRepo repo = new AppointmentRepo();
-            Appointment item = repo.GetById(id);
+            AppointmentService service = new AppointmentService();
+            Appointment item = service.GetById(id);
 
             DetailsAppointmentVM model = new DetailsAppointmentVM();
 
@@ -93,13 +89,18 @@ namespace MedicSystem.Controllers
         [HttpPost]
         public ActionResult ChangeStatus(DetailsAppointmentVM model)
         {
-            AppointmentRepo repo = new AppointmentRepo();
-            Appointment item = repo.GetById(model.Id);
+            AppointmentService service = new AppointmentService();
+            Appointment item = service.GetById(model.Id);
 
             item.IsApproved = model.IsApproved;
-            repo.Edit(item);
+            service.Edit(item);
 
             return RedirectToAction("Index");
+        }
+
+        public override BaseService<Appointment> SetService()
+        {
+            return new AppointmentService();
         }
     }
 }

@@ -1,39 +1,20 @@
 ﻿@model MedicSystem.ViewModels.BaseFilter
-
 @using System.Reflection;
 @using MedicSystem.Filters;
-
 @{
     var filter = new Dictionary<PropertyInfo, FilterByAttribute>();
     foreach (PropertyInfo pi in Model.GetType().GetProperties())
     {
         FilterByAttribute attrib = (FilterByAttribute)pi.GetCustomAttribute(typeof(FilterByAttribute));
+        attrib = attrib ?? (FilterByAttribute)pi.GetCustomAttribute(typeof(FilterDropDownAttribute));
+
         if (attrib != null)
         {
             filter.Add(pi, attrib);
         }
     }
-
-    Array arr = null;
-    foreach (FieldInfo fi in Model.GetType().GetFields())
-    {
-        if (fi.FieldType.Name == "Array")
-        {
-            arr = (Array)fi.GetValue(Model);
-        }
-    }
 }
-
-<script>
-   function SetExtraFilter()
-   {
-       document.getElementById("@(Model.Prefix.Replace(".", "__"))Choosen").value = $("#dropdown :selected").text();
-   }
-
-</script>
-
 <form action="/@(ViewContext.RouteData.Values["controller"].ToString())/@(ViewContext.RouteData.Values["action"].ToString())" method="post">
-
     @foreach (string key in this.Request.QueryString.Keys)
     {
         if (!key.ToString().Contains(Model.Prefix) && key.ToString() != Model.Pager.Prefix + "CurrentPage")
@@ -41,7 +22,6 @@
             <input type="hidden" id="@((Model.Prefix + key).Replace(".", "__"))" name="@key" value="@this.Request[key].ToString()" />
         }
     }
-
     @foreach (var kvp in this.ViewContext.RouteData.Values)
     {
         if (kvp.Key == "controller" || kvp.Key == "action" || kvp.Key.ToString() == Model.Pager.Prefix + "CurrentPage")
@@ -51,38 +31,38 @@
 
         <input type="hidden" id="@((Model.Prefix + kvp.Key).Replace(".", "__"))" name="@kvp.Key" value="@kvp.Value.ToString()" />
     }
-
     @foreach (var key in this.Request.Form.Keys)
     {
-        if (filter.Count(f => Model.Prefix + f.Key.Name == key.ToString()) <= 0 && key.ToString() != Model.Pager.Prefix + "CurrentPage")
+        if (filter.Count(f => Model.Prefix + f.Key.Name == key.ToString()) <= 0 && key.ToString() != Model.Pager.Prefix + "CurrentPage" && !key.ToString().Contains(Model.Prefix))
         {
-            if (key.ToString() != Model.Prefix + "Choosen")
-            {
-                <input type="hidden" id="@((Model.Prefix + key).Replace(".", "__"))" name="@key.ToString()" value="@this.Request.Form[key.ToString()].ToString()" />
-            }
+
+            <input type="hidden" id="@((Model.Prefix + key).Replace(".", "__"))" name="@key.ToString()" value="@this.Request.Form[key.ToString()].ToString()" />
         }
     }
-
     @foreach (KeyValuePair<PropertyInfo, FilterByAttribute> kvp in filter)
     {
-        <label for="@(Model.Prefix.Replace(".", "__"))@kvp.Key.Name">@kvp.Value.DisplayName</label>
-        <input class="form-control" id="@(Model.Prefix.Replace(".", "__"))@kvp.Key.Name" type="text" name="@(Model.Prefix)@kvp.Key.Name" value="@kvp.Key.GetValue(Model, null)" />
-    }
+        if (kvp.Value is FilterDropDownAttribute)
+        {
+            var dropDownAttrib = (FilterDropDownAttribute)kvp.Value;
+            var pi = Model.GetType().GetProperty(dropDownAttrib.TargetProperty);
+            string targetPropertyValue = Convert.ToString(pi.GetValue(Model, null));
 
-    @if (arr != null)
-    {
-        <label for="dropdown">Sort by:</label>
-        <select class="form-control" id="dropdown" onchange="SetExtraFilter()">
-            <option value="" selected>Choose value</option>
-            @foreach (var item in arr)
-            {
-                <option class="dropdown" value="@item">@item</option>
-            }
-        </select>
-        <input class="form-control" id="@(Model.Prefix.Replace(".", "__"))Choosen" name="@(Model.Prefix)Choosen" type="hidden" value="">
+            <label for="@(Model.Prefix.Replace(".", "__"))@dropDownAttrib.TargetProperty">@dropDownAttrib.DisplayName:</label>
+            <select class="form-control" id="@(Model.Prefix.Replace(".", "__"))@dropDownAttrib.TargetProperty" name="@Model.Prefix@dropDownAttrib.TargetProperty">
+                <option value="" selected>Choose value</option>
+                @foreach (var item in (List<SelectListItem>)kvp.Key.GetValue(Model, null))
+                {
+                    <option class="dropdown" value="@item.Value" @(item.Value == targetPropertyValue ? "selected" : "")>@item.Text</option>
+                }
+            </select>
+        }
+        else if (kvp.Value is FilterByAttribute)
+        {
+            <label for="@(Model.Prefix.Replace(".", "__"))@kvp.Key.Name">@kvp.Value.DisplayName</label>
+            <input class="form-control" id="@(Model.Prefix.Replace(".", "__"))@kvp.Key.Name" type="text" name="@(Model.Prefix)@kvp.Key.Name" value="@kvp.Key.GetValue(Model, null)" />
+        }
     }
-
     <br />
     <input class="btn btn-default" type="submit" value="Filter" />
 </form>
-<br />   
+<br />

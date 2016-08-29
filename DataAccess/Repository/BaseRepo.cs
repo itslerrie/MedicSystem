@@ -19,6 +19,8 @@ namespace DataAccess.Repository
             this.context = new MedicSystemDbContext<T>();
             this.dbSet = context.Set<T>();
         }
+
+
         public IQueryable<T> GetAll(Expression<Func<T, bool>> filter, int? page = null, int? pageSize = null)
         {
             IQueryable<T> result = dbSet;

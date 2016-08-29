@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using DataAccess.Repository;
+using DataAccess.Service;
 
 namespace MedicSystem.Controllers
 {
@@ -14,21 +15,21 @@ namespace MedicSystem.Controllers
     {
         public override void ExtraDelete(User patient)
         {
-            AppointmentRepo repo = new AppointmentRepo();
-            List<Appointment> result = repo.GetAll(r => r.Doctor.Id == patient.Id).ToList();
+            AppointmentService service = new AppointmentService();
+            List<Appointment> result = service.GetAll(r => r.Doctor.Id == patient.Id).ToList();
 
             foreach (var item in result)
             {
-                repo.Delete(item);
+                service.Delete(item);
             }
         }
 
-        public override List<User> ListRepo(BaseRepo<User> repo)
-        {
-            List<User> result = repo.GetAll().ToList();
+        //public override List<User> ListRepo(BaseRepo<User> repo)
+        //{
+        //    List<User> result = repo.GetAll().ToList();
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public override void PopulateItem(User item, EditUserVM model)
         {
@@ -60,9 +61,9 @@ namespace MedicSystem.Controllers
             model.Phone = item.Phone;
         }
 
-        public override BaseRepo<User> SetRepo()
+        public override BaseService<User> SetService()
         {
-            return new UserRepo();
+            return new UserService();
         }
     }
 }

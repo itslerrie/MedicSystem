@@ -59,7 +59,11 @@
     <Compile Include="Repository\BaseRepo.cs" />
     <Compile Include="Repository\DoctorRepo.cs" />
     <Compile Include="Repository\UserRepo.cs" />
+    <Compile Include="Service\AppointmentService.cs" />
     <Compile Include="Service\Authorise.cs" />
+    <Compile Include="Service\BaseService.cs" />
+    <Compile Include="Service\DoctorService.cs" />
+    <Compile Include="Service\UserService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

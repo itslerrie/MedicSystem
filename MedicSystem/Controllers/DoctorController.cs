@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using DataAccess.Repository;
+using DataAccess.Service;
 
 namespace MedicSystem.Controllers
 {
@@ -15,27 +16,30 @@ namespace MedicSystem.Controllers
     {
         public override void ExtraDelete(Doctor doctor)
         {
-            AppointmentRepo repo = new AppointmentRepo();
-            List<Appointment> result = repo.GetAll(r => r.Doctor.Id == doctor.Id).ToList();
+            AppointmentService service = new AppointmentService();
+            List<Appointment> result = service.GetAll(r => r.Doctor.Id == doctor.Id).ToList();
 
             foreach (var item in result)
             {
-                repo.Delete(item);
+                service.Delete(item);
             }
+
+            UserService UserSevice = new UserService();
+            UserSevice.Delete(UserSevice.GetById(doctor.UserId));
         }
 
-        public override List<Doctor> ListRepo(BaseRepo<Doctor> repo)
-        {
-            DoctorRepo repoDoctor = new DoctorRepo();
-            List<Doctor> result = repoDoctor.GetAll().ToList();
-            return result;
-        }
+        //public override List<Doctor> ListRepo(BaseRepo<Doctor> repo)
+        //{
+        //    DoctorRepo repoDoctor = new DoctorRepo();
+        //    List<Doctor> result = repoDoctor.GetAll().ToList();
+        //    return result;
+        //}
 
         public override void PopulateItem(Doctor item, EditDoctorVM model)
         {
             if (item.UserId == 0)
             {
-                UserRepo repo = new UserRepo();
+                UserService service = new UserService();
                 User user = new User();
 
                 item.Id = model.Id;
@@ -48,9 +52,9 @@ namespace MedicSystem.Controllers
                 item.Address = model.Address;
                 user.IsAdmin = model.IsAdmin;
 
-                repo.Create(user);
+                service.Create(user);
 
-                List<User> users = repo.GetAll().OrderByDescending(u => u.Id).ToList();
+                List<User> users = service.GetAll().OrderByDescending(u => u.Id).ToList();
 
                 item.UserId = Convert.ToInt32(users[0].Id);
             }
@@ -92,9 +96,9 @@ namespace MedicSystem.Controllers
             model.IsAdmin = item.User.IsAdmin;
         }
 
-        public override BaseRepo<Doctor> SetRepo()
+        public override BaseService<Doctor> SetService()
         {
-            return new DoctorRepo();
+            return new DoctorService();
         }
     }
 }

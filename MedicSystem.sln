@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicSystem", "MedicSystem\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{47F4EF50-828C-455A-9B3C-62AC81857655}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicSystemAPI", "MedicSystemAPI\MedicSystemAPI.csproj", "{F228B7D0-1081-4707-B5A0-5E911F4DC75E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{47F4EF50-828C-455A-9B3C-62AC81857655}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47F4EF50-828C-455A-9B3C-62AC81857655}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47F4EF50-828C-455A-9B3C-62AC81857655}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F228B7D0-1081-4707-B5A0-5E911F4DC75E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F228B7D0-1081-4707-B5A0-5E911F4DC75E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F228B7D0-1081-4707-B5A0-5E911F4DC75E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F228B7D0-1081-4707-B5A0-5E911F4DC75E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

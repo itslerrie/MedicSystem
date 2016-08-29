@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
+using DataAccess.Service;
 
 namespace MedicSystem.Controllers
 {
@@ -19,8 +20,8 @@ namespace MedicSystem.Controllers
         where L : BaseVMList<T, F>, new()
         where F : FilterVM<T>, new()
     {
-        public abstract BaseRepo<T> SetRepo();
-        public abstract List<T> ListRepo(BaseRepo<T> repo);
+        public abstract BaseService<T> SetService();
+        //public abstract List<T> ListRepo(BaseService<T> repo);
         public abstract void PopulateItem(T item, E model);
         public abstract void PopulateModel(T item, E model);
         public abstract void PopulateModelDelete(T item, D model);
@@ -35,14 +36,14 @@ namespace MedicSystem.Controllers
 
         public virtual void PopulateModel(L model)
         {
-            BaseRepo<T> repo = SetRepo();
+            BaseService<T> service = SetService();
 
             TryUpdateModel(model);
 
             Expression<Func<T, bool>> filter = model.Filter.GenerateFilter();
-            model.Items = repo.GetAll(filter, model.Pager.CurrentPage, model.Pager.PageSize).ToList();
+            model.Items = service.GetAll(filter, model.Pager.CurrentPage, model.Pager.PageSize).ToList();
 
-            int resultCount = repo.Count(filter);
+            int resultCount = service.Count(filter);
             model.Pager.PagesCount = (int)Math.Ceiling(resultCount / (double)model.Pager.PageSize);
         }
 
@@ -80,12 +81,12 @@ namespace MedicSystem.Controllers
                 return View(model);
             }
 
-            BaseRepo<T> repo = SetRepo();
+            BaseService<T> service = SetService();
             T newItem = new T();
 
             PopulateItem(newItem, model);
 
-            repo.Create(newItem);
+            service.Create(newItem);
 
             return RedirectToAction("Index");
         }
@@ -94,8 +95,8 @@ namespace MedicSystem.Controllers
         public ActionResult Delete(int id)
         {
 
-            BaseRepo<T> repo = SetRepo();
-            T item = repo.GetById(id);
+            BaseService<T> service = SetService();
+            T item = service.GetById(id);
 
             D model = new D();
 
@@ -107,10 +108,10 @@ namespace MedicSystem.Controllers
         [HttpPost]
         public ActionResult Delete(D model)
         {
-            BaseRepo<T> repo = SetRepo();
-            T deletedItem = repo.GetById(model.Id);
+            BaseService<T> service = SetService();
+            T deletedItem = service.GetById(model.Id);
 
-            repo.Delete(deletedItem);
+            service.Delete(deletedItem);
 
             ExtraDelete(deletedItem);
 
@@ -124,8 +125,8 @@ namespace MedicSystem.Controllers
 
             FillList(model);
 
-            BaseRepo<T> repo = SetRepo();
-            T item = repo.GetById(id);
+            BaseService<T> service = SetService();
+            T item = service.GetById(id);
 
             PopulateModel(item, model);
 
@@ -140,12 +141,12 @@ namespace MedicSystem.Controllers
                 return View(model);
             }
 
-            BaseRepo<T> repo = SetRepo();
-            T item = repo.GetById(model.Id); ;
+            BaseService<T> service = SetService();
+            T item = service.GetById(model.Id); ;
 
             PopulateItem(item, model);
 
-            repo.Edit(item);
+            service.Edit(item);
 
             return RedirectToAction("Index");
         }
@@ -154,8 +155,8 @@ namespace MedicSystem.Controllers
         public ActionResult Details(int id)
         {
 
-            BaseRepo<T> repo = SetRepo();
-            T item = repo.GetById(id);
+            BaseService<T> service = SetService();
+            T item = service.GetById(id);
 
             D model = new D();
 

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DataAccess.Service;
 
 namespace MedicSystem.Controllers
 {
@@ -37,7 +38,7 @@ namespace MedicSystem.Controllers
                 return View(model);
             }
 
-            UserRepo repo = new UserRepo();
+            UserService service = new UserService();
             User newItem = new User();
 
             newItem.Email = model.Email;
@@ -47,7 +48,7 @@ namespace MedicSystem.Controllers
             newItem.Phone = model.Phone;
 
 
-            repo.Create(newItem);
+            service.Create(newItem);
 
             return RedirectToAction("Login");
         }
@@ -109,8 +110,8 @@ namespace MedicSystem.Controllers
         {
             User user = AuthenticationManager.LoggedUser;
 
-            DoctorRepo repo = new DoctorRepo();
-            Doctor doctor = repo.GetById(user.Id);
+            DoctorService service = new DoctorService();
+            Doctor doctor = service.GetById(user.Id);
 
             EditDoctorVM edit = new EditDoctorVM();
 
@@ -139,7 +140,7 @@ namespace MedicSystem.Controllers
                 return View(edit);
             }
 
-            UserRepo repo = new UserRepo();
+            UserService service = new UserService();
             User user = new User();
 
             user.Id = edit.Id;
@@ -150,18 +151,18 @@ namespace MedicSystem.Controllers
             user.Phone = edit.Phone;
             user.IsAdmin = AuthenticationManager.LoggedUser.IsAdmin;
 
-            repo.Edit(user);
+            service.Edit(user);
 
             if (edit.Specialization != null)
             {
-                DoctorRepo repoDoctor = new DoctorRepo();
+                DoctorService serviceDoctor = new DoctorService();
                 Doctor doctor = new Doctor();
 
                 doctor.Specialization = edit.Specialization;
                 doctor.Address = edit.Address;
                 doctor.UserId = AuthenticationManager.LoggedUser.Id;
 
-                repoDoctor.Edit(doctor);
+                serviceDoctor.Edit(doctor);
             }
 
             AuthenticationManager.Authenticate(AuthenticationManager.LoggedUser.Email, AuthenticationManager.LoggedUser.Password);

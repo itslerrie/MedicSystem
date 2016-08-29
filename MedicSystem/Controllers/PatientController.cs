@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
+using DataAccess.Service;
 
 namespace MedicSystem.Controllers
 {
@@ -14,51 +15,43 @@ namespace MedicSystem.Controllers
     {
         public override void PopulateModel(ListUserVM model)
         {
-            DoctorRepo doctorRepo = new DoctorRepo();
-            List<Doctor> doctors = doctorRepo.GetAll().ToList();
-
-            UserRepo userRepo = new UserRepo();
-            List<User> users = userRepo.GetAll().ToList();
-
-            foreach (var item in doctors)
-            {
-                users.Remove(userRepo.GetById(item.UserId));
-            }
+            UserService serviceUser = new UserService();
+            List<User> users = serviceUser.GetPatients().ToList();
 
             TryUpdateModel(model);
 
             Expression<Func<User, bool>> filter = model.Filter.GenerateFilter();
-            model.Items = userRepo.GetItems(users, filter, model.Pager.CurrentPage, model.Pager.PageSize).ToList();
+            model.Items = serviceUser.GetItems(users, filter, model.Pager.CurrentPage, model.Pager.PageSize).ToList();
 
-            int resultCount = userRepo.CountItems(users, filter);
+            int resultCount = serviceUser.CountItems(users, filter);
             model.Pager.PagesCount = (int)Math.Ceiling(resultCount / (double)model.Pager.PageSize);
         }
 
         public override void ExtraDelete(User patient)
         {
-            AppointmentRepo repo = new AppointmentRepo();
-            List<Appointment> result = repo.GetAll(r => r.Doctor.Id == patient.Id).ToList();
+            AppointmentService service = new AppointmentService();
+            List<Appointment> result = service.GetAll(r => r.Doctor.Id == patient.Id).ToList();
 
             foreach (var item in result)
             {
-                repo.Delete(item);
+                service.Delete(item);
             }
         }
 
-        public override List<User> ListRepo(BaseRepo<User> repo)
-        {
-            DoctorRepo doctorRepo = new DoctorRepo();
-            UserRepo userRepo = new UserRepo();
-            List<User> patients = userRepo.GetAll().ToList();
-            List<Doctor> doctors = doctorRepo.GetAll().ToList();
+        //public override List<User> ListRepo(BaseRepo<User> repo)
+        //{
+        //    DoctorRepo doctorRepo = new DoctorRepo();
+        //    UserRepo userRepo = new UserRepo();
+        //    List<User> patients = userRepo.GetAll().ToList();
+        //    List<Doctor> doctors = doctorRepo.GetAll().ToList();
 
-            foreach (var doctor in doctors)
-            {
-                patients.Remove(userRepo.GetById(doctor.UserId));
-            }
+        //    foreach (var doctor in doctors)
+        //    {
+        //        patients.Remove(userRepo.GetById(doctor.UserId));
+        //    }
 
-            return patients;
-        }
+        //    return patients;
+        //}
 
         public override void PopulateItem(User item, EditUserVM model)
         {
@@ -90,9 +83,9 @@ namespace MedicSystem.Controllers
             model.Phone = item.Phone;
         }
 
-        public override BaseRepo<User> SetRepo()
+        public override BaseService<User> SetService()
         {
-            return new UserRepo();
+            return new UserService();
         }
     }
 }
